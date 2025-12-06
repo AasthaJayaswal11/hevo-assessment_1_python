@@ -1,0 +1,33 @@
+from io.hevo.api import Event
+
+def transform(event):
+    events = [event]
+    output_events = []
+
+    for ev in events:
+        props = ev.getProperties() or {}
+
+        email = props.get("email", None)
+        username = None
+        if email:
+            email_str = str(email).strip()
+            if "@" in email_str:
+                username = email_str.split("@", 1)[0]
+            else:
+                username = email_str
+
+        new_event = Event(
+            "customers_enriched",
+            {
+                "id": props.get("id"),
+                "first_name": props.get("first_name"),
+                "last_name": props.get("last_name"),
+                "email": props.get("email"),
+                "address": props.get("address"),
+                "username": username
+            }
+        )
+
+        output_events.append(new_event)
+
+    return output_events
