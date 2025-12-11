@@ -1,41 +1,35 @@
 from io.hevo.api import Event
 import uuid
-import datetime
 
-def get_props(ev):
-    try:
-        return ev.getProperties() or {}
-    except Exception:
-        try:
-            return dict(ev)
-        except Exception:
-            return {}
 
 def map_status(s):
     if not s:
         return "order_unknown"
+
     s = str(s).strip().lower()
-    return {
+
+    status_map = {
         "placed": "order_placed",
-	"shipped": "order_shipped",
+        "shipped": "order_shipped",
         "delivered": "order_delivered",
-        "cancelled": "order_cancelled",
-        
-    }.get(s, "order_unknown")
+        "cancelled": "order_cancelled"
+    }
+
+    return status_map.get(s, "order_unknown")
 
 def transform(event):
-    props = get_props(event)
 
-    order_id = props.get("id") or props.get("order_id")
+    props=ev.getProperties() or {}
+
+    order_id = props.get("id")
     customer_id = props.get("customer_id")
     status = props.get("status")
 
     new_props = {
-        "event_id": str(uuid.uuid4()),
         "order_id": order_id,
         "customer_id": customer_id,
         "event_type": map_status(status),
-        "event_time": datetime.datetime.utcnow().isoformat() + "Z"
+
     }
 
     new_event = Event("order_events", new_props)
