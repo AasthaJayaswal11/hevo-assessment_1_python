@@ -19,7 +19,7 @@ def map_status(s):
 
 def transform(event):
 
-    props=ev.getProperties() or {}
+    props=event.getProperties() or {}
 
     order_id = props.get("id")
     customer_id = props.get("customer_id")
