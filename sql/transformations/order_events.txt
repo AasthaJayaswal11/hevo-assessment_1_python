@@ -1,6 +1,4 @@
 from io.hevo.api import Event
-import uuid
-
 
 def map_status(s):
     if not s:
